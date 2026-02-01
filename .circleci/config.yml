@@ -1,0 +1,45 @@
+version: 2.1
+
+jobs:
+  build-and-scan:
+    docker:
+      - image: cimg/node:18.19
+    working_directory: ~/project
+
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+          version: 20.10.24
+
+      - run:
+          name: Install dependencies
+          command: |
+            npm ci
+
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t node-playlist-app:${CIRCLE_SHA1} .
+
+      - run:
+          name: Install Trivy
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y wget
+            wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.1_Linux-64bit.deb
+            sudo dpkg -i trivy_0.50.1_Linux-64bit.deb
+
+      - run:
+          name: Scan Docker image with Trivy
+          command: |
+            trivy image \
+              --severity HIGH,CRITICAL \
+              --exit-code 1 \
+              node-playlist-app:${CIRCLE_SHA1}
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build-and-scan
