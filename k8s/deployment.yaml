@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playlist-app
+  labels:
+    app: playlist
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playlist
+  template:
+    metadata:
+      labels:
+        app: playlist
+    spec:
+      containers:
+      - name: playlist
+        image: node-playlist-app:1.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000

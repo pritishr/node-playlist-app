@@ -1,0 +1,6 @@
+apiVersion: v2
+name: playlist-app
+description: Node.js Playlist Application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
