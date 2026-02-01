@@ -23,17 +23,12 @@ jobs:
             docker build -t node-playlist-app:${CIRCLE_SHA1} .
 
       - run:
-          name: Install Trivy
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y wget
-            wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_Linux-64bit.deb
-            sudo dpkg -i trivy_Linux-64bit.deb
-
-      - run:
           name: Scan Docker image with Trivy
           command: |
-            trivy image \
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:latest \
+              image \
               --severity HIGH,CRITICAL \
               --exit-code 1 \
               node-playlist-app:${CIRCLE_SHA1}
